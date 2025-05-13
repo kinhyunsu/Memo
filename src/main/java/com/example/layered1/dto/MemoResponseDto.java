@@ -1,9 +1,11 @@
 package com.example.layered1.dto;
 
 import com.example.layered1.entity.Memo;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class MemoResponseDto {
 
     private Long id;
