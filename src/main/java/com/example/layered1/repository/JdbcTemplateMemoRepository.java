@@ -2,11 +2,13 @@ package com.example.layered1.repository;
 
 import com.example.layered1.dto.MemoResponseDto;
 import com.example.layered1.entity.Memo;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -25,11 +27,6 @@ public class JdbcTemplateMemoRepository implements MemoRepository {
     public JdbcTemplateMemoRepository(DataSource dateSource){
         this.jdbcTemplate = new JdbcTemplate(dateSource);
     }
-
-
-
-
-
 
 
     @Override
@@ -59,7 +56,24 @@ public class JdbcTemplateMemoRepository implements MemoRepository {
     }
 
     @Override
-    public void deleteMemo(Long id) {
+    public Memo findMemoByIdOrElseThrow(Long id) {
+        List<Memo> result = jdbcTemplate.query("select * from memo where id = ?", memoRowMapperV2(), id);
+        return result.stream().findAny().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found id = " + id));
+    }
+
+    @Override
+    public int updateMemo(Long id, String title, String contents) {
+        return jdbcTemplate.update("update memo set title = ?, contents = ? where id = ?",title, contents, id);
+    }
+
+    @Override
+    public int updateTitle(Long id, String title) {
+        return jdbcTemplate.update("update memo set title = ? where id = ?", title, id);
+    }
+
+    @Override
+    public int deleteMemo(Long id) {
+        return jdbcTemplate.update("delete from memo where id = ?", id);
 
     }
 
