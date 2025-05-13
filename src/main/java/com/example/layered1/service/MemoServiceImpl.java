@@ -4,7 +4,9 @@ import com.example.layered1.dto.MemoRequestDto;
 import com.example.layered1.dto.MemoResponseDto;
 import com.example.layered1.entity.Memo;
 import com.example.layered1.repository.MemoRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,5 +38,16 @@ public class MemoServiceImpl implements MemoService {
 
 
         return memoRepository.findAllMemos();
+    }
+
+    @Override
+    public MemoResponseDto findMemoById(Long id) {
+
+        Memo memo = memoRepository.findMemoById(id);
+
+        if (memo == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Does not exist id = " + id);
+        }
+        return new MemoResponseDto(memo);
     }
 }
